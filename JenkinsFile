@@ -1,0 +1,42 @@
+pipeline {
+    agent any
+    stages {
+        stage ('checkout') {
+            steps {
+               checkout scmGit(branches: [[name: '*/main']], extensions: [], userRemoteConfigs: [[url: 'https://github.com/prashanth0108/maven-web-app.git']])
+            }
+        }
+        stage ('mvn compile') {
+            steps {
+               sh '''mvn compile'''
+            }
+        }
+        stage ('mvn package') {
+            steps {
+               sh '''mvn package'''
+            }
+        }
+         stage ('build image') {
+            steps {
+               sh '''docker build -t myweb .'''
+            }
+         }
+         stage ('image push ') {
+            steps {
+             script {
+                withDockerRegistry(credentialsId:'docker-cred') {
+               sh '''docker tag myweb prashanth0108/dynamic:latest
+               docker push prashanth0108/dynamic:latest'''
+                }
+             }
+            }
+         }
+         stage ('pull image and run conatainer ') {
+            steps{
+               sh '''docker pull prashanth0108/dynamic:latest
+               docker run --name myweb -d -p 8777:8080 prashanth0108/dynamic:latest'''
+            }
+         }
+    }
+}
+            
