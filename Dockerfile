@@ -1,4 +1,6 @@
 FROM tomcat:8-jre8
 LABEL maintainer address"prashanthkusuma"
-COPY **/*.war /usr/locat/tomcat/webapps
+COPY target/**/*.war /usr/locat/tomcat/webapps
+WORKDIR /usr/locat/tomcat/webapps
 CMD ["Catalina.sh","Run"]
+EXPOSE 8080
